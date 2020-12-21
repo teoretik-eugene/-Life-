@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Жизнь</title>
+        <meta charset="UTF-8">
+        <style>
+            .input1{
+                width: 200px;
+                height: 30px;
+            }
+            
+            table{border: 0.5px solid black;
+             border-spacing: 0.9px;
+              margin:auto;}
+            
+            .alive{
+                background-color: #38a808;
+                border: 0.5px solid black ;
+                  height: 10px;
+                   width: 10px;
+            }
+            .dead{
+                background-color: #dfe6e9;
+                border: 0.5px solid black ;
+                  height: 10px;
+                   width: 10px;
+            }
+            .start_button{
+                background-color: #fa3307;
+                color: #f5f6fa;
+            }
+            .stop_button{
+                background-color: #4a09b3;
+                color: #f5f6fa;
+            }
+            .quantity{
+                position: relative;
+                left:200px;
+            }  
+        </style>
+    </head>
+    <body>
+        <h1 style="text-align: center;">Игра "жизнь"</h1>
+        <span>Введите количество рядов и столбцов:</span>        
+        <form name="board">           
+            <input class="input1" type="text" name="row" value="50">
+            <span style="left: 200px; position: relative;">Ввести количсетво живых клеток для случайной генерации:</span>
+            <input class="input1 quantity" type="text" name="quantity" value="">  
+            <br><br>
+            <input class="input1" type="text" name="col" value="50" placeholder="размер по Оy/столбцы">                 
+            <br><br>
+            <input type="button" id="btn1" value="Построить поле">
+            <input type="button" id="random" value="Рандомизировать">
+            <input type="button" id="step" value="Шаг">
+            <input type="button" class="start_button" id="start" value="Запустить">
+            <input type="button" class="stop_button" id="stop" value="Остановить">
+            <br><br>
+            <input type="button" id="clean" value="Очистить поле">
+            <br><br><br>
+        </form>
+        <script>
+            var quantity = 0;                   
+            var timer;                          
+            
+            function createGameBoard(parentElem,row,col){  //Ф-ция для создания игрового поля
+                
+                parentElem = parentElem || document.body; 
+                col = parseInt(row1.value) || 10;
+                row = parseInt(col1.value) || 10;
+
+                
+                var board = document.createElement('table');
+                board.addEventListener("click", clicker);   
+                board.id="board1";
+                
+                for (let i=0; i<row; i++){                  // i - строки
+                    var tr = document.createElement('tr');
+                    table[i]=[];                            
+
+                    new_table[i]=[];
+
+
+                    for (let j=0; j<col; j++){              //j- столбцы
+                        var td = document.createElement('td');
+                        table[i][j]=false; 
+
+                        new_table[i][j]=false;                     
+
+                        td.id=(String(i) +" "+ String(j));           
+
+                        td.className="dead";           
+
+                        tr.appendChild(td);                
+                    }
+                    board.appendChild(tr);
+
+                }
+                parentElem.appendChild(board);
+            }
+            document.getElementById('btn1').onclick = function(){               // Анонимная ф-ция, которая удаляет старую таблицу и создает новую
+                var checkBoard = document.getElementById("board1"); 
+                if(checkBoard!=null){checkBoard.remove()};                     
+                createGameBoard(document.body,row2,col2);                   
+                }
+
+            function clicker(event){                            // Ф-ция, которая меняет класс элемента td, если клетка жива, то true, если мертва, то false
+                if(event.target.tagName === "TD"){               
+                    event.target.classList.toggle("alive");
+                    event.target.classList.toggle("dead");
+                    
+                }
+
+                if(event.target.classList.contains("alive")){        
+                    let od = event.target.id;                          
+                    var n; var m; var str;
+
+                    str=od.split(' ');                                  
+                    n=str[0];                                           
+                    m=str[1];
+
+                    table[parseInt(n)][parseInt(m)]=true;               
+                }
+
+                if(event.target.classList.contains("dead")){       
+                    let od = event.target.id;
+                    var n; var m; var str;
+
+                    str=od.split(' ');
+                    n=str[0];
+                    m=str[1];
+
+                    table[parseInt(n)][parseInt(m)]=false;              
+                }
+            }
+
+
+            var form = document.forms.board;                    
+            var row1 = board.row;                                
+            var col1 = board.col;
+            var qua = board.quantity;                           
+
+            var row2 = parseInt(row1.value);                    
+            var col2 = parseInt(col1.value);                  
+            
+            var table = [];                             
+
+            var new_table = [];                        // new_table - массив в котором проверяются все значения, а table - массив, в который мы запоминаем эти значения
+           
+
+            function life(){                          // Ф-ция по реализации Жизни
+                row=parseInt(row1.value);                  
+                col=parseInt(col1.value);
+
+                for(let i=0; i<row; i++){                     
+
+                    for (let j=0; j<col; j++){
+
+                        new_table[i][j]=table[i][j];            
+                    }
+                }
+                                               
+                // Цикл для прохода по клеткам и выполнению правил
+                for(let i=0; i<row; i++){
+
+                    for(let j=0; j<col; j++){
+                        let neighbour = 0;               
+                        
+                        if((i-1)>=0 && (i+1)<row-1){                          
+
+                            //ненулевая и непоследняя строка
+                            if(table[i-1][j-1]==true){neighbour=neighbour+1;};
+                            if(table[i-1][j-1]==undefined){if(table[i-1][col-1]==true){neighbour=neighbour+1;};};
+                            if(table[i-1][j]==true){neighbour=neighbour+1};
+                            if(table[i-1][j+1]==true){neighbour=neighbour+1};
+                            if(table[i-1][j+1]==undefined){if(table[i-1][0]==true){neighbour=neighbour+1};};
+                            if(table[i][j-1]==true){neighbour=neighbour+1;};
+                            if(table[i][j-1]==undefined){if(table[i][col-1]==true){neighbour=neighbour+1;};};
+                            if(table[i][j+1]==true){neighbour=neighbour+1};
+                            if(table[i][j+1]==undefined){if(table[i][0]==true){neighbour=neighbour+1;};};
+                            if(table[i+1][j-1]==true){neighbour=neighbour+1;};
+                            if(table[i+1][j-1]==undefined){if(table[i+1][col-1]==true){neighbour=neighbour+1;};};
+                            if(table[i+1][j]==true){neighbour=neighbour+1;};
+                            if(table[i+1][j+1]==true){neighbour=neighbour+1;};
+                            if(table[i+1][j+1]==undefined){if(table[i+1][col-1]==true){neighbour=neighbour+1;};};
+                        }
+                        if((i==0)){                                                                   
+                            //Случай, когда нулевая строка:
+                           if(table[row-1][j-1]==true){neighbour=neighbour+1;};
+                           if(table[row-1][j-1]==undefined){if(table[row-1][col-1]==true){neighbour=neighbour+1;};};
+                           if(table[row-1][j]==true){neighbour=neighbour+1;};
+                           if(table[row-1][j+1]==true){neighbour=neighbour+1;};
+                           if(table[row-1][j+1]==undefined){if(table[row-1][0]==true){neighbour=neighbour+1;};};
+                           if(table[i][j-1]==true){neighbour=neighbour+1;};
+                           if(table[i][j-1]==undefined){if(table[i][col-1]==true){neighbour=neighbour+1;};};              
+                           if(table[i][j+1]==true){neighbour=neighbour+1;};
+                           if(table[i][j+1]==undefined){if(table[i][0]==true){neighbour=neighbour+1;};};
+                           if(table[i+1][j-1]==true){neighbour=neighbour+1;};
+                           if(table[i+1][j-1]==undefined){if(table[i+1][col-1]){neighbour=neighbour+1;};};
+                           if(table[i+1][j]==true){neighbour=neighbour+1;};
+                           if(table[i+1][j+1]==true){neighbour=neighbour+1;};
+                           if(table[i+1][j+1]==undefined){if(table[i+1][0]==true){neighbour=neighbour+1;};};
+                        }
+                        // Случай, когда последняя строка:
+                        if(i==row-1){
+
+                            if(table[0][j-1]==true){neighbour=neighbour+1;};
+                            if(table[0][j-1]==undefined){if(table[0][col-1]==true){neighbour=neighbour+1;};};
+                            if(table[0][j]==true){neighbour=neighbour+1;};
+                            if(table[0][j+1]==true){neighbour=neighbour+1;};
+                            if(table[0][j+1]==undefined){if(table[0][0]==true){neighbour=neighbour+1;};};
+                            if(table[i][j-1]==true){neighbour=neighbour+1;};
+                            if(table[i][j-1]==undefined){if(table[i][col-1]==true){neighbour=neighbour+1;};};
+                            if(table[i][j+1]==true){neighbour=neighbour+1;};
+                            if(table[i][j+1]==undefined){if(table[i][0]==true){neighbour=neighbour+1;};};
+                            if(table[i-1][j-1]==true){neighbour=neighbour+1;};    //
+                            if(table[i-1][j-1]==undefined){if(table[i-1][col-1]==true){neighbour=neighbour+1;};};
+                            if(table[i-1][j]==true){neighbour=neighbour+1;};
+                            if(table[i-1][j+1]==true){neighbour=neighbour+1;};
+                            if(table[i-1][j+1]==undefined){if(table[i-1][0]==true){neighbour=neighbour+1;};};
+
+                        }
+
+                        // Анализ соседей по правилам:
+
+                        if((neighbour>3) || (neighbour<2)){new_table[i][j]=false;};             
+                    
+                        
+                        if(neighbour==3 && table[i][j]==false){new_table[i][j]=true;};                 
+                    }   
+                }
+                    
+                for(let i=0; i<row; i++){    // Отрисовка поля
+                    for(let j=0; j<col; j++){
+                        if(new_table[i][j]==true){
+                            let td_check = document.getElementById(String(i)+" "+String(j));
+                            td_check.classList.remove("dead");
+                            td_check.classList.add("alive");
+                        }
+                        if(new_table[i][j]==false){
+                            let td_check = document.getElementById(String(i)+" "+String(j));
+                            td_check.classList.remove("alive");
+                            td_check.classList.add("dead");
+                        }
+                    }
+                }
+               
+                for(let i=0; i<row; i++){
+                    for(let j=0; j<col; j++){
+                        table[i][j]=new_table[i][j];
+                    }
+                }
+            }
+            document.getElementById('step').onclick = life;          // Кнопка "Шаг" прогоняет функцию life 1 раз
+                
+            document.getElementById("start").onclick=start;                 // Запуск игры автоматически
+
+            function start(){                       // Ф-ция по автоматическому запуску игры
+                timer=setInterval(life,100);
+                
+            }
+
+            document.getElementById("stop").onclick = stop;         // Остановка игры 
+
+            function stop(){                        // Ф-ция по остановке игры
+                clearTimeout(timer);
+            }
+
+            document.getElementById("random").onclick = randomize;          // Случайное расставление живых клеток
+
+            function randomize(){                                           // Функция по случайному расставлению
+                row = parseInt(row1.value);                                 
+                col = parseInt(col1.value);  
+                quantity = parseInt(qua.value);
+                if(qua.value == ""){alert("Введите количество живых клеток")};
+            for(let i=0; i<row; i++){
+                for(let j=0; j<col; j++){
+                    table[i][j]=false;
+                    let td_check = document.getElementById(String(i)+" "+String(j));            // Отрисовка
+                    td_check.classList.remove("alive");
+                    td_check.classList.add("dead");
+                }
+            }
+
+                    while(quantity>0){
+                        let a=Math.floor(Math.random() * (row)); 
+                        let b=Math.floor(Math.random() * (col));  
+                        if(table[a][b]==true){                         
+                            quantity++;
+                        }
+                        else{
+                            table[a][b]=true;                          
+                        }   
+                        quantity--;
+                    }
+                    // Отрисовка 
+                    for(let i=0; i<row; i++){
+                        for(let j=0; j<col; j++){
+                            if(table[i][j]==true){
+                            let td_check = document.getElementById(String(i)+" "+String(j));
+                            td_check.classList.remove("dead");
+                            td_check.classList.add("alive");
+                        }
+                        if(table[i][j]==false){
+                            let td_check = document.getElementById(String(i)+" "+String(j));
+                            td_check.classList.remove("alive");
+                            td_check.classList.add("dead");
+                        }
+
+                        }
+                    }
+                }
+
+            document.getElementById("clean").onclick = clean;       //  Очистка поля
+
+            function clean(){                                       // Функция для очистки поля
+                row = parseInt(row1.value);
+                col = parseInt(col1.value); 
+                for(let i=0; i<row; i++){                           
+                    for(let j=0; j<col; j++){
+                        table[i][j]=false;
+                        let td_check = document.getElementById(String(i)+" "+String(j));
+                        td_check.classList.remove("alive");
+                        td_check.classList.add("dead");
+                    }
+                }
+            }
+        
+        </script>
+    </body>
+</html>
