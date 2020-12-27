@@ -165,7 +165,7 @@
                     for(let j=0; j<col; j++){
                         let neighbour = 0;               
                         
-                        if((i-1)>=0 && (i+1)<row-1){                          
+                        if((i-1)>=0 && (i+1)<=row-1){     // Тут <=, можно додумать почему                     
 
                             //ненулевая и непоследняя строка
                             if(table[i-1][j-1]==true){neighbour=neighbour+1;};
