@@ -222,11 +222,12 @@
 
                         // Анализ соседей по правилам:
 
-                        if((neighbour>3) || (neighbour<2)){new_table[i][j]=false;};             
-                    
                         
-                        if(neighbour==3 && table[i][j]==false){new_table[i][j]=true;};
-                        if((neighbour==3 || neighbour==2) && table[i][j]==false){new_table[i][j]=true;};
+                        if(neighbor>3 && table[i][j]==true){new_table[i][j]=false;};//.              // Если у клетки больше 3-ех соседей, то она умирает. Зписываем это в новый массив,т.к. если
+                    // записать в старом, то это вызовет ошибку в правилах
+                        if(neighbor<2 && table[i][j]==true){new_table[i][j]=false;};                 // Если у клетки меньше двух соседей, то умирает от одиночества
+                        if(neighbor==3 && table[i][j]==false){new_table[i][j]=true;};                 // Если у клетки ровно 3 соседа, то клетка "становится живой"
+                        if((neighbor==3 || neighbor==2) && table[i][j]==true){new_table[i][j]=true}//тут
                     }   
                 }
                     
